@@ -28,7 +28,7 @@ public class ClientHandler implements Runnable {
             } catch(IOException i) {
                 // i.printStackTrace();
                 System.out.println(i);
-                System.exit(1);
+                return;
 
             }
         }

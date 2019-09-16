@@ -33,7 +33,7 @@ public class ContentServerHandler implements Runnable {
 
             } catch(IOException i) {
                 System.out.println(i);
-                System.exit(1);
+                return;
             }
         }
 
