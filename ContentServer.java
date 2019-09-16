@@ -1,10 +1,9 @@
-// A Java program for a Client
+// A Java program for a Content Server, ripped from Client.java
 import java.net.*;
 import java.io.*;
 import java.util.Scanner;
 
-public class Client
-{
+public class ContentServer {
     // initialize socket and input output streams
     private Socket socket            = null;
     private DataInputStream  input   = null;
@@ -12,7 +11,7 @@ public class Client
     private DataOutputStream out     = null;
 
     // constructor to put ip address and port
-    public Client(String address, int port)
+    public ContentServer(String address, int port)
     {
         // establish a connection
         try
@@ -76,8 +75,9 @@ public class Client
     public static void main(String args[])
     {
         if (args.length > 0) {
-            Client client = new Client("127.0.0.1", Integer.parseInt(args[0]));
+            ContentServer conterServer = new ContentServer("127.0.0.1", Integer.parseInt(args[0]));
         } else {
-            Client client = new Client("127.0.0.1", 2345);
-        }    }
+            ContentServer conterServer = new ContentServer("127.0.0.1", 2346);
+        }
+    }
 }
