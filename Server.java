@@ -7,7 +7,7 @@ public class Server {
     private ServerSocket server = null;
 
     // constructor with port
-    public Server(int port) {
+    public Server(int port) { 
         // starts server and waits for a connection
         try {
             server = new ServerSocket(port);
