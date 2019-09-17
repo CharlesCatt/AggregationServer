@@ -4,7 +4,7 @@ import java.io.*;
 
 public class ContentServerHandler implements Runnable {
     private Socket           socket   = null;
-    private DataInputStream  dis       = null;
+    private DataInputStream  dis      = null;
     private DataOutputStream dos      = null;
 
     public ContentServerHandler(Socket s, DataInputStream dis, DataOutputStream dos) {

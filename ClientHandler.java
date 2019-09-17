@@ -15,7 +15,7 @@ public class ClientHandler implements Runnable {
     }
     public void run() {
         String line = "";
-        String response = "";
+        String packet = "";
 
         // reads message from client until "Over" is sent
         while (!line.equals("Over"))
@@ -23,6 +23,7 @@ public class ClientHandler implements Runnable {
             try {
                 line = dis.readUTF();
                 System.out.println(line);
+                packet += line + "\n";
                 dos.writeUTF("server says: " + line.toUpperCase());
 
             } catch(IOException i) {
@@ -31,6 +32,7 @@ public class ClientHandler implements Runnable {
                 return;
 
             }
+            AS.addToQueue(socket, packet);
         }
         try {
             dis.close();
