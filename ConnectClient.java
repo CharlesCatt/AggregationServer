@@ -5,10 +5,12 @@ import java.io.*;
 public class ConnectClient implements Runnable {
     //initialise server socket
     private ServerSocket server = null;
-    int port;
+    private int port;
+    private AggregationServer AS;
 
-    public ConnectClient(int port) {
+    public ConnectClient(int port, AggregationServer AS) {
         this.port = port;
+        this.AS = AS;
         // starts server and waits for a connection
         try {
             server = new ServerSocket(port);
@@ -31,7 +33,7 @@ public class ConnectClient implements Runnable {
                 System.out.println("New client: " + socket);
                 DataInputStream dis = new DataInputStream(socket.getInputStream());
                 DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-                Thread t = new Thread(new ClientHandler(socket, dis, dos));
+                Thread t = new Thread(new ClientHandler(socket, dis, dos, AS));
                 t.start();
 
             } catch(IOException i) {

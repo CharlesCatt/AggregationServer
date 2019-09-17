@@ -6,11 +6,13 @@ public class ClientHandler implements Runnable {
     private Socket           socket   = null;
     private DataInputStream  dis       = null;
     private DataOutputStream dos      = null;
+    private AggregationServer AS      = null;
 
-    public ClientHandler(Socket s, DataInputStream dis, DataOutputStream dos) {
+    public ClientHandler(Socket s, DataInputStream dis, DataOutputStream dos, AggregationServer AS) {
         socket = s;
         this.dis = dis;
         this.dos = dos;
+        this.AS  = AS;
 
     }
     public void run() {
@@ -32,8 +34,8 @@ public class ClientHandler implements Runnable {
                 return;
 
             }
-            AS.addToQueue(socket, packet);
         }
+        AS.addToQueue(socket, packet);
         try {
             dis.close();
             dos.close();

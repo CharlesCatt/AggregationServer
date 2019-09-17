@@ -6,11 +6,13 @@ public class ContentServerHandler implements Runnable {
     private Socket           socket   = null;
     private DataInputStream  dis      = null;
     private DataOutputStream dos      = null;
+    private AggregationServer AS      = null;
 
-    public ContentServerHandler(Socket s, DataInputStream dis, DataOutputStream dos) {
+    public ContentServerHandler(Socket s, DataInputStream dis, DataOutputStream dos, AggregationServer AS) {
         socket = s;
         this.dis = dis;
         this.dos = dos;
+        this.AS  = AS;
 
     }
 

@@ -7,9 +7,9 @@ public class AggregationServer {
     // initialise the server threads
     public AggregationServer(int clientPort, int contentServerPort) {
 
-        Thread connectCServer = new Thread(new ConnectContentServer(contentServerPort));
+        Thread connectCServer = new Thread(new ConnectContentServer(contentServerPort, this));
         connectCServer.start();
-        Thread connectC = new Thread(new ConnectClient(clientPort));
+        Thread connectC = new Thread(new ConnectClient(clientPort, this));
         connectC.start();
         String fileName = "temp.dat";
         try {
@@ -33,14 +33,15 @@ public class AggregationServer {
 
     }
 
-    public int addToQueue(Socket handler, String packet) {
+    public static int addToQueue(Socket socket, String packet) {
         System.out.println("from: " + socket);
         System.out.println("message: ");
         System.out.println(packet);
+        return 1;
     }
 
     // static AggregationServer object so handlers can add things to the queue
-    static AggregationServer AS;
+    public static AggregationServer AS = null;
 
     public static void main(String args[]) {
 
