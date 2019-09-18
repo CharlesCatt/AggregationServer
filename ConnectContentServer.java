@@ -5,10 +5,12 @@ import java.io.*;
 public class ConnectContentServer implements Runnable {
     //initialise server socket
     private ServerSocket server = null;
-    int port;
+    private int port;
+    public AggregationServer AS;
 
-    public ConnectContentServer(int port) {
+    public ConnectContentServer(int port, AggregationServer AS) {
         this.port = port;
+        this.AS = AS;
         // starts server and waits for a connection
         try {
             server = new ServerSocket(port);
@@ -30,7 +32,7 @@ public class ConnectContentServer implements Runnable {
                 System.out.println("New Content Server: " + socket);
                 DataInputStream dis = new DataInputStream(socket.getInputStream());
                 DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-                Thread t = new Thread(new ContentServerHandler(socket, dis, dos));
+                Thread t = new Thread(new ContentServerHandler(socket, dis, dos, AS));
                 t.start();
 
             } catch(IOException i) {

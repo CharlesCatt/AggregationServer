@@ -78,6 +78,6 @@ public class Client
         if (args.length > 0) {
             Client client = new Client("127.0.0.1", Integer.parseInt(args[0]));
         } else {
-            Client client = new Client("127.0.0.1", 2345);
+            Client client = new Client("127.0.0.1", 4567);
         }    }
 }

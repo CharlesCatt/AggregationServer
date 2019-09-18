@@ -77,7 +77,7 @@ public class ContentServer {
         if (args.length > 0) {
             ContentServer conterServer = new ContentServer("127.0.0.1", Integer.parseInt(args[0]));
         } else {
-            ContentServer conterServer = new ContentServer("127.0.0.1", 2346);
+            ContentServer conterServer = new ContentServer("127.0.0.1", 4568);
         }
     }
 }
