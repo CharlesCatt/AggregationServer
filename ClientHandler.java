@@ -45,7 +45,8 @@ public class ClientHandler implements Runnable {
                     fileResponse = new DataInputStream(socket.getInputStream());
                     // sends output to the socket
                     fileRequest  = new DataOutputStream(socket.getOutputStream());
-
+                    fileRequest.writeInt(eventNo);
+                    
                     // waiting for response to tell us to send message
                     // TODO: maybe send packet straight away and wait for response.
                     if (fileResponse.readBoolean()) {

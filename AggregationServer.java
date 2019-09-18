@@ -1,20 +1,16 @@
 // A Java program for a Server
 import java.net.*;
 import java.io.*;
-import java.util.PriorityQueue;
-
-
-
-
-
+import java.util.*;
 
 
 public class AggregationServer {
-    public static AggregationServer AS = null;
+    public  static AggregationServer AS = null;
     private static String fileName = null;
     private static File file = null;
     private static BufferedReader reader = null;
     private ServerSocket fileReadWriteRequests = null;
+    public  PriorityQueue<Thread> PQ = null;
 
 
     // initialise the server threads
@@ -24,10 +20,11 @@ public class AggregationServer {
         connectCServer.start();
         Thread connectC = new Thread(new ConnectClient(clientPort, this));
         connectC.start();
+
         fileName = "temp.dat";
         try {
             // initialise the file to use
-            file = new File("fileName");
+            file = new File(fileName);
             if (!(file.exists() || file.isFile())){
                 file.createNewFile();
             }
@@ -37,21 +34,23 @@ public class AggregationServer {
             System.out.println(e);
             System.exit(-1);
         }
-        try {
-            reader = new BufferedReader(new FileReader(fileName));
-        } catch (FileNotFoundException i) {
-            System.out.println("file not found while initialising reader");
-            System.out.println(i);
-            System.exit(-1);
-        }
 
         handleReadWriteRequests();
 
     }
 
+    public class compareThreads implements Comparator<ReadWriteRequest> {
+        public int compare(ReadWriteRequest a, ReadWriteRequest b) {
+            return a.eventNo - b.eventNo;
+        }
+    }
+
     public void handleReadWriteRequests() {
 
-        PriorityQueue<Thread> PQ = new PriorityQueue<Thread>();
+        PQ = new PriorityQueue<Thread>();
+        Thread readWriteHandler = new Thread(new ReadWriteHandler(this));
+        readWriteHandler.start();
+
 
         // starts server and waits for a connection
         try {
@@ -65,9 +64,18 @@ public class AggregationServer {
         while (i < 3) {
             i++;
             Socket s;
-            s = fileReadWriteRequests.accept();
-            PQ.add(new Thread(new ReadWriteRequest(s)));
+            try {
+                s = fileReadWriteRequests.accept();
+                DataInputStream dis = new DataInputStream(s.getInputStream());
+                int priority = dis.readInt();
+                dis.close();
+                Thread t = new Thread(new ReadWriteRequest(s, file, priority));
+                PQ.add(new Thread());
+            } catch (IOException e) {
+                System.out.println(e);
+            }
         }
+
         System.out.println("PriorityQueue size: " + Integer.toString(PQ.size()));
     }
 
