@@ -6,9 +6,8 @@ public class ConnectClient implements Runnable {
     //initialise server socket
     private ServerSocket server = null;
     private int port;
-    private AggregationServer AS;
 
-    public ConnectClient(int port, AggregationServer AS) {
+    public ConnectClient(int port) {
         this.port = port;
         this.AS = AS;
         // starts server and waits for a connection
