@@ -1,7 +1,7 @@
 // communicating with the Handler threads
 import java.net.*;
 import java.io.*;
-import java.util.PriorityQueue;
+import java.util.concurrent.*;
 
 public class ReadWriteRequest implements Runnable {
     private Socket socket;
@@ -27,6 +27,7 @@ public class ReadWriteRequest implements Runnable {
     public void run() {
         try {
             // inform handler that this thread is ready to read
+            System.out.println("informing child process that its request is ready to be processed");
             dos.writeBoolean(true);
             String packet = dis.readUTF();
             String line = "";

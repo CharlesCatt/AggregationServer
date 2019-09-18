@@ -2,6 +2,7 @@
 import java.net.*;
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.*;
 
 
 public class AggregationServer {
@@ -10,7 +11,7 @@ public class AggregationServer {
     private static File file = null;
     private static BufferedReader reader = null;
     private ServerSocket fileReadWriteRequests = null;
-    public  PriorityQueue<Thread> PQ = null;
+    public  PriorityBlockingQueue<Thread> PQ = null;
 
 
     // initialise the server threads
@@ -47,7 +48,7 @@ public class AggregationServer {
 
     public void handleReadWriteRequests() {
 
-        PQ = new PriorityQueue<Thread>();
+        PQ = new PriorityBlockingQueue<Thread>();
         Thread readWriteHandler = new Thread(new ReadWriteHandler(this));
         readWriteHandler.start();
 
@@ -69,14 +70,14 @@ public class AggregationServer {
                 DataInputStream dis = new DataInputStream(s.getInputStream());
                 int priority = dis.readInt();
                 dis.close();
-                Thread t = new Thread(new ReadWriteRequest(s, file, priority));
+                ReadWriteRequest t = new ReadWriteRequest(s, file, priority);
                 PQ.add(new Thread());
             } catch (IOException e) {
                 System.out.println(e);
             }
         }
 
-        System.out.println("PriorityQueue size: " + Integer.toString(PQ.size()));
+        System.out.println("PriorityBlockingQueue size: " + Integer.toString(PQ.size()));
     }
 
     public static void main(String args[]) {
