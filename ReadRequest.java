@@ -22,6 +22,9 @@ public class ReadRequest implements Callable {
                 reader = new BufferedReader(new FileReader(file.getName()));
                 while (line != null) {
                     line = reader.readLine();
+                    if (line == null) {
+                        break;
+                    }
                     feed += line + "\n";
                 }
                 reader.close();

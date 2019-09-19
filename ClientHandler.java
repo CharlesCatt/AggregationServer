@@ -32,13 +32,14 @@ public class ClientHandler implements Runnable {
         String status = "";
 
         // reads message from client until "Over" is sent
-        while (!line.equals("over")) {
+        while (true) {
             try {
                 line = dis.readUTF();
                 // Anything not in the form of a GET request is rejected.
                 if (line.split(" ")[0].compareTo("GET") == 0) {
 
                     Future future = AS.readWriteHandler.submit(new ReadRequest(AS.file));
+
                     // calling this will cause the thread to wait for the response of the future
                     try {
                         feed = future.get().toString();
@@ -46,20 +47,24 @@ public class ClientHandler implements Runnable {
                         e.printStackTrace();
                         System.out.println(e);
                     }
+
                     // write back to client
                     dos.writeUTF(feed);
 
                 } else if (line.split(" ")[0].compareTo("PUT") == 0) {
-                    // line in form: PUT UID
+
+                    // line in form: PUT name
 
                     // String[] lineList = line.split(" ");
-                    // dos.writeUTF(lineList[1]);
+                    System.out.println(line.split("[\n ]")[1] + " made a PUT request");
                     Future future = AS.readWriteHandler.submit(
-                            (new WriteRequest(AS.file, line.split(" ")[1], line.split("\n",2)[1])));
+                            (new WriteRequest(AS.file, line.split("[\n ]")[1], line.split("\n",2)[1])));
+
                     // calling this will cause the thread to wait for the response of the future
                     try {
                         status = future.get().toString();
                     } catch (InterruptedException | ExecutionException e) {
+                        e.printStackTrace();
                         System.out.println(e);
                     }
                     // write back to client

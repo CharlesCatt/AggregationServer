@@ -46,19 +46,24 @@ public class ContentServer
         // string to read message from input
         String line = "";
         String packet = "";
+        String name = "";
 
         // keep reading until end over is input
         while (!line.equals("over"))
         {
             try {
                 line = input.nextLine();
+                name = input.nextLine();
                 // System.out.print(line);
                 // now, until end of feed, add the lines to the packet to be sent
                 while(!line.equals("</feed>")) {
                     line = input.nextLine();
+                    if (line == null) {
+                        break;
+                    }
                     packet += line + "\n";
                 }
-                out.writeUTF("PUT " + Long.toString(Thread.currentThread().getId()) + "\n" + packet);
+                out.writeUTF("PUT " + name + "\n" + packet);
                 System.out.println("Response\n" + serverResponse.readUTF());
 
             } catch(IOException i) {

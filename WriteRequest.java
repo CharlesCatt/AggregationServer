@@ -8,12 +8,12 @@ public class WriteRequest implements Callable {
     private BufferedReader reader;
     private BufferedWriter writer;
     private String packet;
-    private String threadID;
+    private String contentServerName;
 
 
-    public WriteRequest(File f, String tID, String p){
+    public WriteRequest(File f, String csn, String p){
         file = f;
-        threadID = tID;
+        contentServerName = csn;
         packet = p;
     }
 
@@ -28,15 +28,18 @@ public class WriteRequest implements Callable {
             try {
                 // get the contents of the file, then find the id of the ContentServer in that String
                 reader = new BufferedReader(new FileReader(file.getName()));
-                while (!line.equals("</feed>")) {
+                while (line != null) {
                     line = reader.readLine();
+                    if (line == null) {
+                        break;
+                    }
                     feed += line + "\n";
                 }
 
-                if (feed.contains(threadID)) {
-                    newFile = feed.substring(0,feed.indexOf(threadID) + 1) + packet + feed.substring(feed.substring(feed.indexOf(threadID)).indexOf("</feed>") + 1);
+                if (feed.contains(contentServerName)) {
+                    newFile = feed.substring(0,feed.indexOf(contentServerName)) + "\n" + contentServerName + "\n" + packet + "\n" + feed.substring(feed.substring(feed.indexOf(contentServerName)).indexOf("</feed>"));
                 } else {
-                    newFile = threadID + feed + packet;
+                    newFile = feed + "\n" + contentServerName + "\n" + packet;
                 }
                 reader.close();
             } catch (FileNotFoundException i) {
