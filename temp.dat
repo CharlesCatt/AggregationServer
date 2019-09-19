@@ -1,8 +1,30 @@
+
+null
+
+
+cs1
 <feed>
-This
-Is 
-the content
-of the
-file 
-bro
+line1
+line2
 </feed>
+<feed>
+asjdbf
+</feed>
+<feed>
+overwriting
+</feed>
+
+
+line2
+</feed>
+null
+
+cs2
+<feed>
+line1
+line2
+</feed>
+<feed>
+asjdbf
+</feed>
+null

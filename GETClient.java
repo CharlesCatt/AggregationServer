@@ -3,17 +3,15 @@ import java.net.*;
 import java.io.*;
 import java.util.Scanner;
 
-public class Client
-{
+public class GETClient {
     // initialize socket and input output streams
-    private Socket socket            = null;
-    // private DataInputStream  input   = null;
-    private BufferedReader input = null;
+    private Socket socket           = null;
+    private BufferedReader input    = null;
     private DataInputStream  serverResponse = null;
-    private DataOutputStream out     = null;
+    private DataOutputStream out    = null;
 
     // constructor to put ip address and port
-    public Client(String address, int port)
+    public GETClient(String address, int port)
     {
         // establish a connection
         try
@@ -45,12 +43,13 @@ public class Client
         // string to read message from input
         String line = "";
 
-        // keep reading until "Over" is input
-        while (!line.equals("Over"))
+        // keep reading until "over" is input
+        while (!line.equals("over"))
         {
             try {
                 // line = input.nextLine();
                 line = input.readLine();
+
                 out.writeUTF(line);
                 System.out.println("Response\n" + serverResponse.readUTF());
 
@@ -76,8 +75,8 @@ public class Client
     public static void main(String args[])
     {
         if (args.length > 0) {
-            Client client = new Client("127.0.0.1", Integer.parseInt(args[0]));
+            GETClient client = new GETClient("127.0.0.1", Integer.parseInt(args[0]));
         } else {
-            Client client = new Client("127.0.0.1", 4567);
+            GETClient client = new GETClient("127.0.0.1", 4567);
         }    }
 }

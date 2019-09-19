@@ -12,47 +12,72 @@ public class ClientHandler implements Runnable {
 
     public ClientHandler(Socket s, DataInputStream dis, DataOutputStream dos, AggregationServer AS) {
         socket = s;
-        this.dis = dis;
-        this.dos = dos;
+        try {
+            this.dis = new DataInputStream(socket.getInputStream());
+            this.dos = new DataOutputStream(socket.getOutputStream());
+        } catch (IOException e) {
+            System.out.print(e);
+        }
+
+        // this.dis = dis;
+        // this.dos = dos;
         this.AS  = AS;
         eventNo = 1;
 
     }
+    // the first line from the socket. Check if it is a GET or PUT request and submit read or write request accordingly
     public void run() {
         String line = "";
-        // String packet = "";
-        // String feedline = "";
         String feed = "";
-        // String response = "";
+        String status = "";
 
         // reads message from client until "Over" is sent
-        while (!line.equals("over")) {
+        while (true) {
             try {
                 line = dis.readUTF();
                 // Anything not in the form of a GET request is rejected.
-                if (line.split(" ", 2)[0].compareTo("GET") == 0) {
+                if (line.split(" ")[0].compareTo("GET") == 0) {
 
                     Future future = AS.readWriteHandler.submit(new ReadRequest(AS.file));
+
                     // calling this will cause the thread to wait for the response of the future
                     try {
-                        // System.out.println(future.get());
-                        // dos.writeUTF(future.get().toString());
                         feed = future.get().toString();
                     } catch (InterruptedException | ExecutionException e) {
+                        e.printStackTrace();
                         System.out.println(e);
                     }
+
                     // write back to client
                     dos.writeUTF(feed);
 
+                } else if (line.split(" ")[0].compareTo("PUT") == 0) {
+
+                    // line in form: PUT name
+
+                    // String[] lineList = line.split(" ");
+                    System.out.println(line.split("[\n ]")[1] + " made a PUT request");
+                    Future future = AS.readWriteHandler.submit(
+                            (new WriteRequest(AS.file, line.split("[\n ]")[1], line.split("\n",2)[1])));
+
+                    // calling this will cause the thread to wait for the response of the future
+                    try {
+                        status = future.get().toString();
+                    } catch (InterruptedException | ExecutionException e) {
+                        e.printStackTrace();
+                        System.out.println(e);
+                    }
+                    // write back to client
+                    dos.writeUTF(status);
                 } else {
                     dos.writeUTF("400 - Bad request");
-                    Thread.currentThread().interrupt();
+                    break;
                 }
 
             } catch(IOException i) {
                 // i.printStackTrace();
                 System.out.println(i);
-                return;
+                break;
 
             }
         }
