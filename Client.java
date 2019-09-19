@@ -7,7 +7,8 @@ public class Client
 {
     // initialize socket and input output streams
     private Socket socket            = null;
-    private DataInputStream  input   = null;
+    // private DataInputStream  input   = null;
+    private BufferedReader input = null;
     private DataInputStream  serverResponse = null;
     private DataOutputStream out     = null;
 
@@ -24,7 +25,8 @@ public class Client
             serverResponse = new DataInputStream(socket.getInputStream());
 
             // takes input from terminal
-            input  = new DataInputStream(System.in);
+            // input  = new DataInputStream(System.in);
+            input = new BufferedReader(new InputStreamReader(System.in));
 
             // sends output to the socket
             out    = new DataOutputStream(socket.getOutputStream());
@@ -50,9 +52,7 @@ public class Client
                 // line = input.nextLine();
                 line = input.readLine();
                 out.writeUTF(line);
-                // String outline =  "\nResponse: ";
-                // outline += serverResponse.readLine();
-                System.out.println("Response: " + serverResponse.readUTF());
+                System.out.println("Response\n" + serverResponse.readUTF());
 
             } catch(IOException i) {
                 System.out.println(i);
