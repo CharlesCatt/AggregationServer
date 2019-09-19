@@ -22,7 +22,7 @@ public class ReadRequest implements Callable {
                 reader = new BufferedReader(new FileReader(file.getName()));
                 while (!line.equals("</feed>")) {
                     line = reader.readLine();
-                    feed += line;
+                    feed += line + "\n";
                 }
             } catch (FileNotFoundException i) {
                 System.out.println("file not found while initialising reader");
