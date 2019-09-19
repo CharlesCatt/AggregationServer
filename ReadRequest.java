@@ -20,10 +20,11 @@ public class ReadRequest implements Callable {
             try {
                 // get the contents of the file
                 reader = new BufferedReader(new FileReader(file.getName()));
-                while (!line.equals("</feed>")) {
+                while (line != null) {
                     line = reader.readLine();
                     feed += line + "\n";
                 }
+                reader.close();
             } catch (FileNotFoundException i) {
                 System.out.println("file not found while initialising reader");
                 System.out.println(i);

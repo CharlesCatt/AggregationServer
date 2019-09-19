@@ -1,12 +1,13 @@
-// A Java program for a Content Server, ripped from Client.java
+// A Java program for a Client
 import java.net.*;
 import java.io.*;
 import java.util.Scanner;
 
-public class ContentServer {
+public class ContentServer
+{
     // initialize socket and input output streams
     private Socket socket            = null;
-    private DataInputStream  input   = null;
+    private Scanner input = null;
     private DataInputStream  serverResponse = null;
     private DataOutputStream out     = null;
 
@@ -23,7 +24,9 @@ public class ContentServer {
             serverResponse = new DataInputStream(socket.getInputStream());
 
             // takes input from terminal
-            input  = new DataInputStream(System.in);
+            // input  = new DataInputStream(System.in);
+            // input = new BufferedReader(new InputStreamReader(System.in));
+            input = new Scanner(System.in);
 
             // sends output to the socket
             out    = new DataOutputStream(socket.getOutputStream());
@@ -33,25 +36,30 @@ public class ContentServer {
         catch(UnknownHostException u)
         {
             System.out.println(u);
+            return;
         }
         catch(IOException i)
         {
             System.out.println(i);
+            return;
         }
-        // Scanner input = new Scanner(System.in);
         // string to read message from input
         String line = "";
+        String packet = "";
 
-        // keep reading until "Over" is input
-        while (!line.equals("Over"))
+        // keep reading until end over is input
+        while (!line.equals("over"))
         {
             try {
-                // line = input.nextLine();
-                line = input.readLine();
-                out.writeUTF(line);
-                // String outline =  "\nResponse: ";
-                // outline += serverResponse.readLine();
-                System.out.println("Response: " + serverResponse.readUTF());
+                line = input.nextLine();
+                // System.out.print(line);
+                // now, until end of feed, add the lines to the packet to be sent
+                while(!line.equals("</feed>")) {
+                    line = input.nextLine();
+                    packet += line + "\n";
+                }
+                out.writeUTF("PUT " + Long.toString(Thread.currentThread().getId()) + "\n" + packet);
+                System.out.println("Response\n" + serverResponse.readUTF());
 
             } catch(IOException i) {
                 System.out.println(i);
@@ -75,9 +83,8 @@ public class ContentServer {
     public static void main(String args[])
     {
         if (args.length > 0) {
-            ContentServer conterServer = new ContentServer("127.0.0.1", Integer.parseInt(args[0]));
+            ContentServer contentServer = new ContentServer("127.0.0.1", Integer.parseInt(args[0]));
         } else {
-            ContentServer conterServer = new ContentServer("127.0.0.1", 4568);
-        }
-    }
+            ContentServer contentServer = new ContentServer("127.0.0.1", 4567);
+        }    }
 }
