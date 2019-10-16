@@ -41,35 +41,7 @@ public class GETClient {
             System.out.println(i);
         }
         
-        // string to read message from input
-        String line = "";
 
-        // keep reading until "over" is input
-        while (!line.equals("over") & input.hasNextLine())
-        {
-            try {
-                // line = input.nextLine();
-                line = input.nextLine();
-
-                dos.writeUTF(line);
-
-            } catch(IOException i) {
-                System.out.println(i);
-            }
-        }
-
-        // close the connection
-        try
-        {
-            input.close();
-            dos.close();
-            serverResponse.close();
-            socket.close();
-        }
-        catch(IOException i)
-        {
-            System.out.println(i);
-        }
     }
 
     public String readInput() {
@@ -78,13 +50,14 @@ public class GETClient {
         String data = "";
 
         // keep reading until "over" is input
-        while (!line.equals("over")) {
-            while (line != null) {
-                line = input.nextLine();
-                data += line;
-            }
+        // while (!line.equals("over")) {
+        //     while (line != null & input.hasNextLine()) {
+        //         line = input.nextLine();
+        //         data += line;
+        //     }
 
-        }
+        // }
+        data = "GET \n";
         return data;
 
         
@@ -93,7 +66,8 @@ public class GETClient {
     public void sendData(String packet) {
         String response = null;
         try {
-            dos.writeUTF(packet);
+            eventNo += 1;
+            dos.writeUTF(packet + " <eventNo>" + Integer.toString(eventNo) + "</eventNo>");
             response = serverResponse.readUTF();
             
         } catch (IOException e) {
@@ -104,7 +78,7 @@ public class GETClient {
         // could run some sort of verification of format depending on xml parser
 
         // update eventNo:
-        int givenTime = Integer.parseInt(response.substring(response.indexOf("<eventNo>"), response.indexOf("</eventNo>")));
+        int givenTime = Integer.parseInt(response.substring(response.indexOf("<eventNo>") + 9, response.indexOf("</eventNo>")));
         eventNo = (givenTime > eventNo) ? (givenTime + 1) : (eventNo + 1);
         
         System.out.println("Response\n" + response);
@@ -125,21 +99,15 @@ public class GETClient {
     public static void main(String args[]) {
         GETClient client;
         if (args.length > 1) {
-            client = new GETClient("127.0.0.1", Integer.parseInt(args[0]), args[1]);
+            client = new GETClient("127.0.0.1", Integer.parseInt(args[1]), args[0]);
+        } else if (args.length > 0) {
+            client = new GETClient("127.0.0.1", 4567, args[0]);
         } else {
             client = new GETClient("127.0.0.1", 4567, "");
         }
-        Scanner userInput = new Scanner(System.in);
-        String line = "";
-        while (!line.equals("q")) {
-            line = userInput.nextLine();
-            if (!line.equals("n")) {
-                String data = client.readInput();
-                client.sendData(data);
-            }
-        }
+        String data = client.readInput();
+        client.sendData(data);
         client.closeAll();
-        userInput.close();
     }
 
 }

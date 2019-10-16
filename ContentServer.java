@@ -68,7 +68,7 @@ public class ContentServer
                     }
                     packet += line + "\n";
                 }
-                return "PUT " + name + "\n" + packet;
+                return name + "\n" + packet;
 
             // } catch(IOException i) {
             //     System.out.println(i);
@@ -92,19 +92,25 @@ public class ContentServer
 
     void sendData(String packet) {
         try {
-             // increment lamport time and start the message with that.
-                eventNo += 1;
-                packet = "<eventNo>" + Integer.toString(eventNo) + "</eventNo>\n" + packet;
-                out.writeUTF(packet);
-                String response = serverResponse.readUTF();
+            // increment lamport time and start the message with that.
+            eventNo += 1;
+            packet = "PUT " + packet + "<eventNo>" + Integer.toString(eventNo) + "</eventNo>\n";
+            out.writeUTF(packet);
+            String response = serverResponse.readUTF();
 
-                // could run some sort of verification of format depending on xml parser
+            System.out.println("Response\n" + response);
 
-                // update eventNo:
-                int givenTime = Integer.parseInt(response.substring(response.indexOf("<eventNo>"), response.indexOf("</eventNo>")));
-                eventNo = (givenTime > eventNo) ? (givenTime + 1) : (eventNo + 1);
+            // update eventNo:
+            int givenTime = Integer.parseInt(response.substring(response.indexOf("<eventNo>") + 9, response.indexOf("</eventNo>")));
+            eventNo = (givenTime > eventNo) ? (givenTime + 1) : (eventNo + 1);
+
+            // handle 400 bad request
+            if (!response.contains("400 - Bad request")) {
                 
-                System.out.println("Response\n" + response);
+            }
+            // could run some sort of verification of format depending on xml parser
+
+                
         } catch (IOException e) {
             System.out.println(e);
         }
@@ -113,7 +119,9 @@ public class ContentServer
     public static void main(String args[]) {
         ContentServer contentServer;
         if (args.length > 1) {
-            contentServer = new ContentServer("127.0.0.1", Integer.parseInt(args[0]), args[1]);
+            contentServer = new ContentServer("127.0.0.1", Integer.parseInt(args[1]), args[0]);
+        } else if (args.length > 0) {
+            contentServer = new ContentServer("127.0.0.1", 4567, args[0]);
         } else {
             contentServer = new ContentServer("127.0.0.1", 4567, "");
         }

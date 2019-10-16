@@ -34,7 +34,8 @@ public class ClientHandler implements Runnable {
             try {
                 line = dis.readUTF();
                 // update event time
-                int givenTime = Integer.parseInt(line.substring(line.indexOf("<eventNo>"), line.indexOf("</eventNo>")));
+                System.out.println(line);
+                int givenTime = Integer.parseInt(line.substring(line.indexOf("<eventNo>")+9, line.indexOf("</eventNo>")));
                 AS.eventNo = (givenTime > AS.eventNo) ? (givenTime + 1) : (AS.eventNo + 1);
 
                 // Anything not in the form of a GET or PUT request is rejected.
@@ -52,7 +53,7 @@ public class ClientHandler implements Runnable {
 
                     // write back to client
                     AS.eventNo += 1;
-                    feed = "<eventNo>" + Integer.toString(AS.eventNo) + "</eventNo>";
+                    feed = "<eventNo>" + Integer.toString(AS.eventNo) + "</eventNo>" + feed;
                     dos.writeUTF(feed);
 
                 } else if (line.split(" ")[0].compareTo("PUT") == 0) {
@@ -61,8 +62,11 @@ public class ClientHandler implements Runnable {
 
                     // String[] lineList = line.split(" ");
                     System.out.println(line.split("[\n ]")[1] + " made a PUT request");
+                    String contentServerName = line.split("[\n ]")[1];
+                    String packet = line.split("\n",2)[1];
+                    packet = packet.substring(0, packet.indexOf("<eventNo>")); // strip the eventNo tags
                     Future future = AS.readWriteHandler.submit(
-                            (new WriteRequest(AS.file, line.split("[\n ]")[1], line.split("\n",2)[1])));
+                            (new WriteRequest(AS.file, contentServerName, packet)));
 
                     // calling this will cause the thread to wait for the response of the future
                     try {
@@ -71,10 +75,16 @@ public class ClientHandler implements Runnable {
                         e.printStackTrace();
                         System.out.println(e);
                     }
+
+                    // write back to client
+                    AS.eventNo += 1;
+                    status += "\n<eventNo>" + Integer.toString(AS.eventNo) + "</eventNo>" ;
+
                     // write back to client
                     dos.writeUTF(status);
                 } else {
-                    dos.writeUTF("400 - Bad request");
+                    System.out.println(line.split(" ")[0]);
+                    dos.writeUTF("400 - Bad request\n" + "<eventNo>" + Integer.toString(AS.eventNo) + "</eventNo>");
                     break;
                 }
 
