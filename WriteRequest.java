@@ -3,18 +3,20 @@ import java.net.*;
 import java.io.*;
 import java.util.concurrent.*;
 
-public class WriteRequest implements Callable {
-    private String fileName;
+public class WriteRequest implements Callable, FileRequest {
+    public  String fileName;
     private BufferedReader reader;
     private BufferedWriter writer;
     private String packet;
     private String contentServerName;
+    public  int eventNo;
 
 
-    public WriteRequest(String fn, String csn, String p){
+    public WriteRequest(String fn, String csn, String p, int en){
         fileName = fn;
         contentServerName = csn;
         packet = p;
+        eventNo = en;
     }
 
 

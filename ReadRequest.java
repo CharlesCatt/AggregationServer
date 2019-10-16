@@ -3,13 +3,15 @@ import java.net.*;
 import java.io.*;
 import java.util.concurrent.*;
 
-public class ReadRequest implements Callable {
-    private String fileName;
+public class ReadRequest implements Callable, FileRequest {
+    public String fileName;
     private BufferedReader reader;
+    public int eventNo;
 
 
-    public ReadRequest(String fn){
+    public ReadRequest(String fn, int en){
         fileName = fn;
+        eventNo = en;
     }
 
     public String call() throws Exception {

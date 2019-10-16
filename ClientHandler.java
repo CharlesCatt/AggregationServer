@@ -44,7 +44,7 @@ public class ClientHandler implements Runnable {
 
                     String fileName = packet.substring(packet.indexOf("<fileName>") + 10, packet.indexOf("</fileName>"));
 
-                    Future future = AS.readWriteHandler.submit(new ReadRequest(fileName));
+                    Future future = AS.readWriteHandler.submit(new ReadRequest(fileName, AS.eventNo));
 
                     // calling this will cause the thread to wait for the response of the future
                     try {
@@ -71,7 +71,7 @@ public class ClientHandler implements Runnable {
                     packet = packet.substring(0, packet.indexOf("<eventNo>")); // strip the eventNo tags
                     System.out.println(contentServerName + " made a PUT request");
                     Future future = AS.readWriteHandler.submit(
-                            (new WriteRequest(fileName, contentServerName, packet)));
+                            (new WriteRequest(fileName, contentServerName, packet, AS.eventNo)));
 
                     // calling this will cause the thread to wait for the response of the future
                     try {
