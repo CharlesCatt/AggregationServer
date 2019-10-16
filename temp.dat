@@ -1,30 +1,26 @@
 
-null
+
 
 
 cs1
 <feed>
-line1
-line2
+lorem impsum
+dolor
+sit amet
 </feed>
-<feed>
-asjdbf
+
+od
 </feed>
-<feed>
-overwriting
+
+t
 </feed>
 
 
-line2
 </feed>
-null
 
 cs2
 <feed>
-line1
-line2
+I am some
+information from
+cs2. cs1 can eat it.
 </feed>
-<feed>
-asjdbf
-</feed>
-null

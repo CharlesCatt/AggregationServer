@@ -56,6 +56,7 @@ Problems (and potential solutions):
     - similarly, reading from file does not support ATOM structuring
 - ATOM feed does not expire after 15 seconds
     - can probably have some sort of worker thread querying contents of the file and cross-checking times added and times modified with a table of contents
+    - better idea: whenever the file is parsed (read or written) the time-stamp (time on aggregation server) is checked and deleted if over 15 secs
 - cannot read from empty file in GET request
     - file creation system needs to be de-centralised from the AggregationServer and up to being created by the first WriteRequest, and refusing GET requests before this.
 - Very little fault (crashing) tolerance
