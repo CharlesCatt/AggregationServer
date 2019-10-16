@@ -52,7 +52,7 @@ public class GETClient {
         // keep reading until "over" is input
         while (line != null & input.hasNextLine()) {
             line = input.nextLine();
-            data += line;
+            data += line + "\n";
         }
         return data;
 
@@ -63,7 +63,7 @@ public class GETClient {
         String response = null;
         try {
             eventNo += 1;
-            dos.writeUTF(packet + " <eventNo>" + Integer.toString(eventNo) + "</eventNo>");
+            dos.writeUTF(packet + "<eventNo>" + Integer.toString(eventNo) + "</eventNo>");
             response = serverResponse.readUTF();
             
         } catch (IOException e) {
