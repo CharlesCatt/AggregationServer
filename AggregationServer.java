@@ -12,6 +12,7 @@ public class AggregationServer {
     // private BufferedReader reader = null;
     private ServerSocket server = null;
     public  ExecutorService readWriteHandler = null;
+    public int eventNo;
 
 
     // initialise the server threads
@@ -30,6 +31,7 @@ public class AggregationServer {
             System.out.println(e);
             System.exit(-1);
         }
+        eventNo = 0;
 
 
         // start read/write request handler thread

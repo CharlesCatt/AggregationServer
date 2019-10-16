@@ -5,14 +5,16 @@ import java.util.Scanner;
 
 public class GETClient {
     // initialize socket and input output streams
-    private Socket socket           = null;
-    private BufferedReader input    = null;
-    private DataInputStream  serverResponse = null;
-    private DataOutputStream out    = null;
+    private Socket              socket          = null;
+    private Scanner             input           = null;
+    private DataInputStream     serverResponse  = null;
+    private DataOutputStream    dos             = null;
+    private int                 eventNo;
 
     // constructor to put ip address and port
-    public GETClient(String address, int port)
-    {
+    public GETClient(String address, int port, String inputFileName) {
+
+        eventNo = 0;
         // establish a connection
         try
         {
@@ -22,12 +24,11 @@ public class GETClient {
             // takes input from server
             serverResponse = new DataInputStream(socket.getInputStream());
 
-            // takes input from terminal
-            // input  = new DataInputStream(System.in);
-            input = new BufferedReader(new InputStreamReader(System.in));
+            // takes input from file if provided, otherwise command line
+            input = (inputFileName != null) ? new Scanner(new File(inputFileName)) : new Scanner(System.in);
 
             // sends output to the socket
-            out    = new DataOutputStream(socket.getOutputStream());
+            dos = new DataOutputStream(socket.getOutputStream());
 
 
         }
@@ -39,19 +40,18 @@ public class GETClient {
         {
             System.out.println(i);
         }
-        // Scanner input = new Scanner(System.in);
+        
         // string to read message from input
         String line = "";
 
         // keep reading until "over" is input
-        while (!line.equals("over"))
+        while (!line.equals("over") & input.hasNextLine())
         {
             try {
                 // line = input.nextLine();
-                line = input.readLine();
+                line = input.nextLine();
 
-                out.writeUTF(line);
-                System.out.println("Response\n" + serverResponse.readUTF());
+                dos.writeUTF(line);
 
             } catch(IOException i) {
                 System.out.println(i);
@@ -62,7 +62,7 @@ public class GETClient {
         try
         {
             input.close();
-            out.close();
+            dos.close();
             serverResponse.close();
             socket.close();
         }
@@ -72,11 +72,74 @@ public class GETClient {
         }
     }
 
-    public static void main(String args[])
-    {
-        if (args.length > 0) {
-            GETClient client = new GETClient("127.0.0.1", Integer.parseInt(args[0]));
+    public String readInput() {
+        // string to read message from input
+        String line = "";
+        String data = "";
+
+        // keep reading until "over" is input
+        while (!line.equals("over")) {
+            while (line != null) {
+                line = input.nextLine();
+                data += line;
+            }
+
+        }
+        return data;
+
+        
+    }
+
+    public void sendData(String packet) {
+        String response = null;
+        try {
+            dos.writeUTF(packet);
+            response = serverResponse.readUTF();
+            
+        } catch (IOException e) {
+            System.out.println(e);
+            System.exit(-1);
+        }
+            
+        // could run some sort of verification of format depending on xml parser
+
+        // update eventNo:
+        int givenTime = Integer.parseInt(response.substring(response.indexOf("<eventNo>"), response.indexOf("</eventNo>")));
+        eventNo = (givenTime > eventNo) ? (givenTime + 1) : (eventNo + 1);
+        
+        System.out.println("Response\n" + response);
+        
+    }
+
+    public void closeAll() {
+        // close the connection
+        try {
+            input.close();
+            dos.close();
+            serverResponse.close();
+            socket.close();
+        } catch (IOException i) {
+            System.out.println(i);
+        }
+    }
+    public static void main(String args[]) {
+        GETClient client;
+        if (args.length > 1) {
+            client = new GETClient("127.0.0.1", Integer.parseInt(args[0]), args[1]);
         } else {
-            GETClient client = new GETClient("127.0.0.1", 4567);
-        }    }
+            client = new GETClient("127.0.0.1", 4567, "");
+        }
+        Scanner userInput = new Scanner(System.in);
+        String line = "";
+        while (!line.equals("q")) {
+            line = userInput.nextLine();
+            if (!line.equals("n")) {
+                String data = client.readInput();
+                client.sendData(data);
+            }
+        }
+        client.closeAll();
+        userInput.close();
+    }
+
 }
