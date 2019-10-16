@@ -3,25 +3,15 @@ import java.net.*;
 import java.io.*;
 import java.util.concurrent.*;
 
-public class WriteRequest implements FileRequest, Comparable<FileRequest> {
+public class WriteRequest implements FileRequest {
     private String fileName;
     private BufferedReader reader;
     private BufferedWriter writer;
     private String packet;
     private String contentServerName;
     public  int eventNo;
-
-    @Override
-    public int compareTo(FileRequest fileRequest) {
-        if (eventNo > fileRequest.eventNo) {
-            return 1;
-        } else if (eventNo < fileRequest.eventNo) {
-            return -1;
-        }
-        return 0;
-    }
-
-
+    
+    
     public WriteRequest(String fn, String csn, String p, int en){
         fileName = fn;
         contentServerName = csn;
@@ -29,6 +19,9 @@ public class WriteRequest implements FileRequest, Comparable<FileRequest> {
         eventNo = en;
     }
 
+    public int getEventNo() {
+        return eventNo;
+    }
 
     public String call() throws Exception {
         String feed = "";

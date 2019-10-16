@@ -3,7 +3,7 @@ import java.net.*;
 import java.io.*;
 import java.util.concurrent.*;
 
-public class ReadRequest implements FileRequest, Comparable<FileRequest> {
+public class ReadRequest implements FileRequest {
     private String fileName;
     private BufferedReader reader;
     public  int eventNo;
@@ -14,14 +14,8 @@ public class ReadRequest implements FileRequest, Comparable<FileRequest> {
         eventNo = en;
     }
 
-    @Override
-    public int compareTo(FileRequest fileRequest) {
-        if (eventNo > fileRequest.eventNo) {
-            return 1;
-        } else if (eventNo < fileRequest.eventNo) {
-            return -1;
-        }
-        return 0;
+    public int getEventNo() {
+        return eventNo;
     }
 
     public String call() throws Exception {
