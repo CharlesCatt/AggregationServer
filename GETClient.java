@@ -50,14 +50,10 @@ public class GETClient {
         String data = "";
 
         // keep reading until "over" is input
-        // while (!line.equals("over")) {
-        //     while (line != null & input.hasNextLine()) {
-        //         line = input.nextLine();
-        //         data += line;
-        //     }
-
-        // }
-        data = "GET \n";
+        while (line != null & input.hasNextLine()) {
+            line = input.nextLine();
+            data += line;
+        }
         return data;
 
         
