@@ -23,25 +23,28 @@ public class ClientHandler implements Runnable {
         this.AS  = AS;
 
     }
-    // the first line from the socket. Check if it is a GET or PUT request and submit read or write request accordingly
+    // the first input from the socket. Check if it is a GET or PUT request and submit read or write request accordingly
     public void run() {
-        String line = "";
+        String input = "";
         String feed = "";
         String status = "";
 
         // reads message from client until "Over" is sent
         while (true) {
             try {
-                line = dis.readUTF();
+                input = dis.readUTF();
                 // update event time
-                System.out.println(line);
-                int givenTime = Integer.parseInt(line.substring(line.indexOf("<eventNo>")+9, line.indexOf("</eventNo>")));
+                System.out.println(input);
+                int givenTime = Integer.parseInt(input.substring(input.indexOf("<eventNo>")+9, input.indexOf("</eventNo>")));
                 AS.eventNo = (givenTime > AS.eventNo) ? (givenTime + 1) : (AS.eventNo + 1);
 
                 // Anything not in the form of a GET or PUT request is rejected.
-                if (line.split(" ")[0].compareTo("GET") == 0) {
+                if (input.split(" ")[0].compareTo("GET") == 0) {
+                    String packet = input.split("\n", 2)[1]; // strip GET from start
 
-                    Future future = AS.readWriteHandler.submit(new ReadRequest(AS.file));
+                    String fileName = packet.substring(packet.indexOf("<fileName>") + 10, packet.indexOf("</fileName>"));
+
+                    Future future = AS.readWriteHandler.submit(new ReadRequest(fileName));
 
                     // calling this will cause the thread to wait for the response of the future
                     try {
@@ -56,17 +59,19 @@ public class ClientHandler implements Runnable {
                     feed = "<eventNo>" + Integer.toString(AS.eventNo) + "</eventNo>" + feed;
                     dos.writeUTF(feed);
 
-                } else if (line.split(" ")[0].compareTo("PUT") == 0) {
+                } else if (input.split(" ")[0].compareTo("PUT") == 0) {
 
-                    // line in form: PUT name
+                    // input in form: PUT name
 
-                    // String[] lineList = line.split(" ");
-                    System.out.println(line.split("[\n ]")[1] + " made a PUT request");
-                    String contentServerName = line.split("[\n ]")[1];
-                    String packet = line.split("\n",2)[1];
+                    // String[] lineList = input.split(" ");
+                    String contentServerName = input.split("[\n ]")[1];
+                    String packet = input.split("\n",2)[1];
+                    String fileName = packet.substring(packet.indexOf("<fileName>") + 10, packet.indexOf("</fileName>"));
+
                     packet = packet.substring(0, packet.indexOf("<eventNo>")); // strip the eventNo tags
+                    System.out.println(contentServerName + " made a PUT request");
                     Future future = AS.readWriteHandler.submit(
-                            (new WriteRequest(AS.file, contentServerName, packet)));
+                            (new WriteRequest(fileName, contentServerName, packet)));
 
                     // calling this will cause the thread to wait for the response of the future
                     try {
@@ -83,7 +88,7 @@ public class ClientHandler implements Runnable {
                     // write back to client
                     dos.writeUTF(status);
                 } else {
-                    System.out.println(line.split(" ")[0]);
+                    System.out.println(input.split(" ")[0]);
                     dos.writeUTF("400 - Bad request\n" + "<eventNo>" + Integer.toString(AS.eventNo) + "</eventNo>");
                     break;
                 }

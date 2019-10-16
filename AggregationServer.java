@@ -6,10 +6,6 @@ import java.util.concurrent.*;
 
 
 public class AggregationServer {
-    // public  AggregationServer AS = null;
-    private String fileName = null;
-    public File file = null;
-    // private BufferedReader reader = null;
     private ServerSocket server = null;
     public  ExecutorService readWriteHandler = null;
     public int eventNo;
@@ -17,20 +13,7 @@ public class AggregationServer {
 
     // initialise the server threads
     public AggregationServer(int port) {
-        // consolidate file to read
-        fileName = "temp.dat";
-        try {
-            // initialise the file to use
-            file = new File(fileName);
-            if (!(file.exists() || file.isFile())){
-                file.createNewFile();
-            }
-            System.out.println("file is ready");
-        } catch (IOException e) {
-            System.out.println("file reading error");
-            System.out.println(e);
-            System.exit(-1);
-        }
+
         eventNo = 0;
 
 
