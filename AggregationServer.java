@@ -7,8 +7,8 @@ import java.util.concurrent.*;
 
 public class AggregationServer {
     private ServerSocket server = null;
-    public  ExecutorService readWriteHandler = null;
-    public int eventNo;
+    public  ThreadPoolExecutor readWriteHandler = null;
+    public  int eventNo;
 
 
     // initialise the server threads
@@ -18,8 +18,9 @@ public class AggregationServer {
 
 
         // start read/write request handler thread
-        
-        readWriteHandler = Executors.newSingleThreadExecutor();
+        BlockingQueue<Runnable> threadQueue = new PriorityBlockingQueue<Runnable>();
+        readWriteHandler = new ThreadPoolExecutor(1, 1, 0, TimeUnit.SECONDS, threadQueue);
+        // readWriteHandler = Executors.newSingleThreadExecutor();
 
 
         // starts server and waits for a connection

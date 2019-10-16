@@ -3,15 +3,25 @@ import java.net.*;
 import java.io.*;
 import java.util.concurrent.*;
 
-public class ReadRequest implements Callable, FileRequest {
-    public String fileName;
+public class ReadRequest implements FileRequest, Comparable<FileRequest> {
+    private String fileName;
     private BufferedReader reader;
-    public int eventNo;
+    public  int eventNo;
 
 
     public ReadRequest(String fn, int en){
         fileName = fn;
         eventNo = en;
+    }
+
+    @Override
+    public int compareTo(FileRequest fileRequest) {
+        if (eventNo > fileRequest.eventNo) {
+            return 1;
+        } else if (eventNo < fileRequest.eventNo) {
+            return -1;
+        }
+        return 0;
     }
 
     public String call() throws Exception {

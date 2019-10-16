@@ -1,6 +1,5 @@
 
-interface FileRequest {
-    public String fileName;
-    public BufferedReader reader;
-    public int EventNo;
+import java.util.concurrent.*;
+public interface FileRequest extends Callable {
+    public int eventNo = 0;
 }
