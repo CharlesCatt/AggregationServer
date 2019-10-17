@@ -11,10 +11,12 @@ public class ContentServer
     private DataInputStream     serverResponse = null;
     private DataOutputStream    out            = null;
     private int                 eventNo;
+    private boolean             waiting;
 
     // constructor to put ip address and port
     public ContentServer(String address, int port, String inputFileName) {
         eventNo = 0;
+        waiting = false;
 
         // establish a connection
         try
@@ -96,24 +98,64 @@ public class ContentServer
             eventNo += 1;
             packet = "PUT " + packet + "<eventNo>" + Integer.toString(eventNo) + "</eventNo>\n";
             out.writeUTF(packet);
-            String response = serverResponse.readUTF();
-
-            System.out.println("Response\n" + response);
-
-            // update eventNo:
-            int givenTime = Integer.parseInt(response.substring(response.indexOf("<eventNo>") + 9, response.indexOf("</eventNo>")));
-            eventNo = (givenTime > eventNo) ? (givenTime + 1) : (eventNo + 1);
-
-            // handle 400 bad request
-            if (!response.contains("400 - Bad request")) {
-                
-            }
-            // could run some sort of verification of format depending on xml parser
-
                 
         } catch (IOException e) {
             System.out.println(e);
         }
+    }
+
+    public String getResponse() {
+        String response = null;
+
+        try {
+            response = serverResponse.readUTF();
+
+            // could run some sort of verification of format depending on xml parser
+    
+            // update eventNo:
+            int givenTime = Integer
+                    .parseInt(response.substring(response.indexOf("<eventNo>") + 9, response.indexOf("</eventNo>")));
+            eventNo = (givenTime > eventNo) ? (givenTime + 1) : (eventNo + 1);
+    
+            // handle 400 bad request
+            if (!response.contains("400 - Bad request")) {
+    
+            }
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+        return response;
+    }
+
+    // public void closeAll() {
+    //     // close the connection
+    //     try {
+    //         input.close();
+    //         dos.close();
+    //         serverResponse.close();
+    //         socket.close();
+    //     } catch (IOException i) {
+    //         System.out.println(i);
+    //     }
+    // }
+
+    public void changeInputSource(String inputFileName) {
+        try {
+            input = (inputFileName != null) ? new Scanner(new File(inputFileName)) : new Scanner(System.in);
+        } catch (FileNotFoundException e) {
+            System.out.println(e);
+        }
+    }
+
+
+    public String toString() {
+        String description = "";
+
+        description += "eventNo: " + Integer.toString(eventNo);
+        description += "\n";
+        description += "waiting: " + Boolean.toString(waiting);
+
+        return description;
     }
 
     public static void main(String args[]) {

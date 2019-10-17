@@ -32,6 +32,19 @@ public class AggregationServer {
             System.out.println(e);
         }
 
+        
+        // readWriteHandler.shutdown();
+        // handleReadWriteRequests();
+
+    }
+
+    // public class compareThreads implements Comparator<ReadWriteRequest> {
+    //     public int compare(ReadWriteRequest a, ReadWriteRequest b) {
+    //         return a.eventNo - b.eventNo;
+    //     }
+    // }
+
+    public void acceptConnections() {
         while (true) {
             Socket socket = null;
             try {
@@ -57,16 +70,7 @@ public class AggregationServer {
             System.out.println(e);
             System.exit(1);
         }
-        // readWriteHandler.shutdown();
-        // handleReadWriteRequests();
-
     }
-
-    // public class compareThreads implements Comparator<ReadWriteRequest> {
-    //     public int compare(ReadWriteRequest a, ReadWriteRequest b) {
-    //         return a.eventNo - b.eventNo;
-    //     }
-    // }
 
     public static void main(String args[]) {
 
@@ -79,7 +83,7 @@ public class AggregationServer {
             port = 4567;
         }
         AggregationServer AS = new AggregationServer(port);
-
+        AS.acceptConnections();
 
 
     }

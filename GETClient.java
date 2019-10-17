@@ -10,11 +10,13 @@ public class GETClient {
     private DataInputStream     serverResponse  = null;
     private DataOutputStream    dos             = null;
     private int                 eventNo;
+    private boolean             waiting;
 
     // constructor to put ip address and port
     public GETClient(String address, int port, String inputFileName) {
 
         eventNo = 0;
+        waiting = false;
         // establish a connection
         try
         {
@@ -44,6 +46,13 @@ public class GETClient {
 
     }
 
+    public void changeInputSource(String inputFileName) {
+        try {
+            input = (inputFileName != null) ? new Scanner(new File(inputFileName)) : new Scanner(System.in);
+        } catch (FileNotFoundException e) {
+            System.out.println(e);
+        }    }
+
     public String readInput() {
         // string to read message from input
         String line = "";
@@ -56,29 +65,38 @@ public class GETClient {
         }
         return data;
 
-        
     }
 
     public void sendData(String packet) {
-        String response = null;
         try {
             eventNo += 1;
             dos.writeUTF(packet + "<eventNo>" + Integer.toString(eventNo) + "</eventNo>");
-            response = serverResponse.readUTF();
+            
             
         } catch (IOException e) {
             System.out.println(e);
             System.exit(-1);
         }
+        waiting = true;
             
         // could run some sort of verification of format depending on xml parser
 
+    }
+
+    public String getResponse() {
+        String response = null;
+
+        try {
+            response = serverResponse.readUTF();
+        } catch(IOException e) {
+            System.out.println(e);
+            System.exit(-1);
+        }
         // update eventNo:
         int givenTime = Integer.parseInt(response.substring(response.indexOf("<eventNo>") + 9, response.indexOf("</eventNo>")));
         eventNo = (givenTime > eventNo) ? (givenTime + 1) : (eventNo + 1);
-        
-        System.out.println("Response\n" + response);
-        
+    
+        return response;
     }
 
     public void closeAll() {
@@ -92,6 +110,17 @@ public class GETClient {
             System.out.println(i);
         }
     }
+
+    public String toString() {
+        String description = "";
+        
+        description += "eventNo: " + Integer.toString(eventNo);
+        description += "\n";
+        description += "waiting: " + Boolean.toString(waiting);
+
+        return description;
+    }
+
     public static void main(String args[]) {
         GETClient client;
         if (args.length > 1) {
@@ -103,6 +132,8 @@ public class GETClient {
         }
         String data = client.readInput();
         client.sendData(data);
+        System.out.println(client.getResponse());
+        System.out.println(client.toString());
         client.closeAll();
     }
 
