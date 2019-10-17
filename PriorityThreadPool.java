@@ -3,12 +3,6 @@ import java.io.IOException;
 import java.util.Comparator;
 import java.util.concurrent.*;
 
-/*
- *
- * adapted code from https://www.baeldung.com/java-priority-job-schedule
- * 
- */
-
 public class PriorityThreadPool {
     private ExecutorService deQueueAndExecute;
     private ThreadPoolExecutor requestScheduler;

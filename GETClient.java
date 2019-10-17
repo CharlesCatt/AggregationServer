@@ -47,8 +47,11 @@ public class GETClient {
     }
 
     public void changeInputSource(String inputFileName) {
-        input = (inputFileName != null) ? new Scanner(new File(inputFileName)) : new Scanner(System.in);
-    }
+        try {
+            input = (inputFileName != null) ? new Scanner(new File(inputFileName)) : new Scanner(System.in);
+        } catch (FileNotFoundException e) {
+            System.out.println(e);
+        }    }
 
     public String readInput() {
         // string to read message from input
@@ -92,6 +95,7 @@ public class GETClient {
         // update eventNo:
         int givenTime = Integer.parseInt(response.substring(response.indexOf("<eventNo>") + 9, response.indexOf("</eventNo>")));
         eventNo = (givenTime > eventNo) ? (givenTime + 1) : (eventNo + 1);
+    
         return response;
     }
 

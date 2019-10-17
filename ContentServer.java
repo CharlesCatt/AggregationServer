@@ -127,20 +127,24 @@ public class ContentServer
         return response;
     }
 
-    public void closeAll() {
-        // close the connection
-        try {
-            input.close();
-            dos.close();
-            serverResponse.close();
-            socket.close();
-        } catch (IOException i) {
-            System.out.println(i);
-        }
-    }
+    // public void closeAll() {
+    //     // close the connection
+    //     try {
+    //         input.close();
+    //         dos.close();
+    //         serverResponse.close();
+    //         socket.close();
+    //     } catch (IOException i) {
+    //         System.out.println(i);
+    //     }
+    // }
 
     public void changeInputSource(String inputFileName) {
-        input = (inputFileName != null) ? new Scanner(new File(inputFileName)) : new Scanner(System.in);
+        try {
+            input = (inputFileName != null) ? new Scanner(new File(inputFileName)) : new Scanner(System.in);
+        } catch (FileNotFoundException e) {
+            System.out.println(e);
+        }
     }
 
 
