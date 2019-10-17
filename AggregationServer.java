@@ -19,8 +19,9 @@ public class AggregationServer {
 
         // start read/write request handler thread
         FileRequestComparator comparator = new FileRequestComparator();
-        BlockingQueue<FileRequest> threadQueue = new PriorityBlockingQueue<FileRequest>(11, comparator);
+        BlockingQueue<Runnable> threadQueue = new PriorityBlockingQueue<Runnable>(11, comparator);
         readWriteHandler = new ThreadPoolExecutor(1, 1, 0, TimeUnit.SECONDS, threadQueue);
+        // readWriteHandler = new PriorityThreadPool();
         // readWriteHandler = Executors.newSingleThreadExecutor();
 
 
@@ -56,7 +57,7 @@ public class AggregationServer {
             System.out.println(e);
             System.exit(1);
         }
-        readWriteHandler.shutdown();
+        // readWriteHandler.shutdown();
         // handleReadWriteRequests();
 
     }
